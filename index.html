@@ -58,6 +58,8 @@
   .stw-menu-card { background: var(--color-card); border: 0.5px solid var(--color-border); border-radius: 14px; overflow: hidden; }
   .stw-menu-thumb { position: relative; height: 78px; background: linear-gradient(135deg, var(--color-primary-light), #FFDDAF); display: flex; align-items: center; justify-content: center; }
   .stw-menu-thumb i { font-size: 24px; color: var(--color-primary); opacity: 0.55; }
+  .stw-menu-icon-badge { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  .stw-menu-icon-badge svg { width: 22px; height: 22px; color: var(--color-primary-dark); }
   .stw-menu-badge { position: absolute; top: 6px; font-size: 8.5px; font-weight: 700; padding: 3px 7px; border-radius: 999px; color: #fff; letter-spacing: 0.2px; }
   .stw-menu-badge.spicy { left: 6px; background: #E0473A; }
   .stw-menu-badge.popular { right: 6px; background: var(--color-primary); }
@@ -137,6 +139,9 @@ const menu = {
 let cart = { 'Ceviche clásico': 1, 'Lomo saltado': 2, 'Chicha morada': 2 };
 let payMethod = 'Tarjeta';
 let tab = 'inicio';
+
+/* Ícono de plato en SVG puro (no depende de fuentes externas, siempre se ve) */
+const DISH_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7a2 2 0 0 0 2 2h1v11"/><path d="M7 2v9"/><path d="M11 2v9"/><path d="M18 2c-1.6 0-3 1.6-3 5v4a2 2 0 0 0 2 2h1v9"/></svg>';
 
 /* ============================================================
    PANEL DE CONTROL - FOTO DE FONDO DEL SPLASH
@@ -229,7 +234,7 @@ function render() {
           '<div class="stw-menu-thumb">' +
             (it.spicy ? '<span class="stw-menu-badge spicy">Picante</span>' : '') +
             (it.popular ? '<span class="stw-menu-badge popular">Popular</span>' : '') +
-            '<i class="ti ti-tools-kitchen-2"></i>' +
+            '<span class="stw-menu-icon-badge">' + DISH_ICON + '</span>' +
           '</div>' +
           '<div class="stw-menu-info">' +
             '<div><p class="stw-menu-name">' + it.n + '</p><p class="stw-menu-price">S/ ' + it.p.toFixed(2) + '</p></div>' +
