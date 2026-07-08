@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartTable Ica - Prototipo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+<style>
+  /* ============================================================
+     PANEL DE CONTROL DE COLORES
+     Cambia estos valores para modificar TODA la app de una vez.
+     ============================================================ */
+  :root {
+    --color-primary: #6FB92C;
+    --color-primary-dark: #5CA023;
+    --color-primary-light: #E8F3DD;
+    --color-dark: #10190F;
+    --color-dark-2: #17261A;
+    --color-bg: #F4F6F1;
+    --color-card: #FFFFFF;
+    --color-border: #DCE6D4;
+    --color-text: #22281F;
+    --color-text-muted: #7A8574;
+  }
+
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Arial, sans-serif; background: var(--color-bg); margin: 0; padding: 40px 16px; display: flex; justify-content: center; }
+  .stw { max-width: 420px; width: 100%; background: var(--color-card); border-radius: 20px; padding: 16px; border: 0.5px solid var(--color-border); box-shadow: 0 6px 24px rgba(0,0,0,0.08); position: relative; }
+  .stw-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .stw-logo { width: 28px; height: 28px; border-radius: 8px; background: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stw-title { font-size: 14px; font-weight: 500; color: var(--color-text); margin: 0; }
+  .stw-sub { font-size: 11px; color: var(--color-text-muted); margin: 0; }
+  .stw-waiter { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; background: var(--color-card); border: 0.5px solid var(--color-border); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .stw-tabs { display: flex; background: var(--color-primary-light); border-radius: 999px; padding: 3px; margin: 14px 0; overflow-x: auto; }
+  .stw-tab { flex: 1; text-align: center; font-size: 11px; padding: 7px 4px; border-radius: 999px; cursor: pointer; color: var(--color-text-muted); transition: all 0.2s; border: none; background: transparent; font-family: inherit; white-space: nowrap; }
+  .stw-tab.active { background: var(--color-dark); color: #FFFFFF; }
+  .stw-panel { animation: fadeUp 0.35s ease; min-height: 320px; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .stw-card { background: var(--color-card); border: 0.5px solid var(--color-border); border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .stw-thumb { width: 42px; height: 42px; border-radius: 8px; background: var(--color-primary-light); flex-shrink: 0; }
+  .stw-name { font-size: 13px; color: var(--color-text); margin: 0; }
+  .stw-price { font-size: 12px; color: var(--color-primary-dark); font-weight: 600; margin: 0; }
+  .stw-btn { background: var(--color-primary); color: #FFFFFF; border: none; border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 500; width: 100%; cursor: pointer; font-family: inherit; margin-top: 6px; }
+  .stw-btn:hover { background: var(--color-primary-dark); }
+  .stw-btn-outline { background: var(--color-card); color: var(--color-text); border: 0.5px solid var(--color-border); border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 500; width: 100%; cursor: pointer; font-family: inherit; margin-top: 6px; }
+  .stw-qty { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .stw-qty button { width: 22px; height: 22px; border-radius: 50%; border: 0.5px solid var(--color-border); background: var(--color-card); cursor: pointer; font-size: 13px; color: var(--color-text); }
+  .stw-chips { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+  .stw-chip { padding: 6px 12px; border-radius: 999px; border: 0.5px solid var(--color-border); background: var(--color-card); font-size: 11px; color: var(--color-text-muted); cursor: pointer; white-space: nowrap; font-family: inherit; }
+  .stw-chip.active { background: var(--color-primary); border-color: var(--color-primary); color: #FFFFFF; }
+  .stw-pay-option { background: var(--color-card); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; border: 1.5px solid var(--color-border); }
+  .stw-pay-option.selected { border-color: var(--color-primary); background: var(--color-primary-light); }
+  .stw-toast { position: absolute; bottom: 16px; left: 16px; right: 16px; background: var(--color-dark); color: #FFF; font-size: 12px; padding: 10px 14px; border-radius: 10px; text-align: center; animation: fadeUp 0.3s ease; }
+  .stw-splash { background: var(--color-dark); border-radius: 20px; padding: 32px 22px; text-align: center; animation: fadeUp 0.4s ease; }
+  .stw-splash-logo { width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 12px; background: var(--color-dark-2); border: 1px solid var(--color-primary); display: flex; align-items: center; justify-content: center; }
+  .stw-splash-title { font-size: 26px; font-weight: 700; margin: 0; letter-spacing: 0.5px; color: #FFFFFF; }
+  .stw-splash-title .g { color: var(--color-primary); }
+  .stw-splash-tag { font-size: 12px; color: #B7C3BC; margin: 8px 0 4px; }
+  .stw-splash-quote { font-size: 12px; font-style: italic; color: #8FA398; margin: 4px 0 22px; }
+  .stw-splash-quote .g { color: var(--color-primary); font-style: normal; }
+  .stw-splash-btn { background: var(--color-primary); color: #0B0F0D; border: none; border-radius: 10px; padding: 13px; font-size: 13px; font-weight: 700; width: 100%; cursor: pointer; font-family: inherit; }
+  .stw-splash-btn:hover { background: var(--color-primary-dark); color: #fff; }
+  .stw-splash-foot { font-size: 10px; color: #5C6B62; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="stw" id="stw-root">
+  <div id="stw-splash-holder"></div>
+  <div id="stw-app-holder" style="display:none">
+    <div class="stw-header">
+      <div class="stw-logo"><i class="ti ti-tools-kitchen-2" style="color:#fff;font-size:15px"></i></div>
+      <div>
+        <p class="stw-title">Sistema de mesas digitales</p>
+        <p class="stw-sub">Restaurantes de Ica</p>
+      </div>
+      <div class="stw-waiter" onclick="callWaiter()" title="Llamar al mesero"><i class="ti ti-bell" style="font-size:15px;color:var(--color-text)"></i></div>
+    </div>
+    <div class="stw-tabs" id="stw-tabs"></div>
+    <div class="stw-panel" id="stw-panel"></div>
+  </div>
+  <div id="stw-toast-holder"></div>
+</div>
+<script>
+/* ============================================================
+   PANEL DE CONTROL - MENU Y PRECIOS
+   Agrega, edita o elimina categorías y platos aquí.
+   n = nombre, d = descripción, p = precio (soles)
+   ============================================================ */
+const categories = ['Entradas', 'Principales', 'Bebidas'];
+let activeCategory = 'Entradas';
+const menu = {
+  'Entradas': [
+    { n: 'Ceviche clásico', d: 'Pescado fresco marinado', p: 35 },
+    { n: 'Anticuchos', d: 'Brochetas de corazón', p: 22 }
+  ],
+  'Principales': [
+    { n: 'Lomo saltado', d: 'Lomo con papas fritas', p: 38 },
+    { n: 'Arroz con mariscos', d: 'Arroz criollo con mariscos', p: 32 }
+  ],
+  'Bebidas': [
+    { n: 'Chicha morada', d: 'Vaso 500ml', p: 8 },
+    { n: 'Pisco sour', d: 'Coctel de bandera', p: 18 }
+  ]
+};
+let cart = { 'Ceviche clásico': 1, 'Lomo saltado': 2, 'Chicha morada': 2 };
+let payMethod = 'Tarjeta';
+let tab = 'inicio';
+
+/* ============================================================
+   PANEL DE CONTROL - TEXTOS DE BIENVENIDA (pantalla splash)
+   ============================================================ */
+function renderSplash() {
+  document.getElementById('stw-splash-holder').innerHTML =
+    '<div class="stw-splash">' +
+    '<div class="stw-splash-logo"><i class="ti ti-tools-kitchen-2" style="color:var(--color-primary);font-size:22px"></i></div>' +
+    '<p class="stw-splash-title">SMART<span class="g">TABLE</span> ICA</p>' +
+    '<p class="stw-splash-tag">Mesas digitales interactivas para restaurantes</p>' +
+    '<p class="stw-splash-quote">"La nueva <span class="g">experiencia digital</span> para restaurantes de Ica"</p>' +
+    '<button class="stw-splash-btn" onclick="enterApp()">Comenzar</button>' +
+    '<p class="stw-splash-foot">Toca la mesa para explorar el menú y pedir</p>' +
+    '</div>';
+}
+function enterApp() {
+  document.getElementById('stw-splash-holder').style.display = 'none';
+  document.getElementById('stw-app-holder').style.display = 'block';
+  render();
+}
+renderSplash();
+const tabs = [
+  { id: 'inicio', label: 'Inicio' },
+  { id: 'menu', label: 'Menú' },
+  { id: 'carrito', label: 'Carrito' },
+  { id: 'pago', label: 'Pago' },
+  { id: 'confirmacion', label: 'Confirmación' }
+];
+function priceOf(name) {
+  for (const cat of categories) {
+    const item = menu[cat].find(i => i.n === name);
+    if (item) return item.p;
+  }
+  return 0;
+}
+function renderTabs() {
+  document.getElementById('stw-tabs').innerHTML = tabs.map(t =>
+    '<button class="stw-tab' + (tab === t.id ? ' active' : '') + '" onclick="setTab(\'' + t.id + '\')">' + t.label + '</button>'
+  ).join('');
+}
+function setTab(id) { tab = id; render(); }
+function setCategory(c) { activeCategory = c; render(); }
+function addToCart(name) {
+  cart[name] = (cart[name] || 0) + 1;
+  render();
+  showToast(name + ' agregado');
+}
+function changeQty(name, delta) {
+  cart[name] = Math.max(0, (cart[name] || 0) + delta);
+  render();
+}
+function setPayMethod(m) { payMethod = m; render(); }
+function callWaiter() { showToast('Mesero notificado, en camino'); }
+function showToast(msg) {
+  const holder = document.getElementById('stw-toast-holder');
+  holder.innerHTML = '<div class="stw-toast">' + msg + '</div>';
+  setTimeout(() => { holder.innerHTML = ''; }, 1800);
+}
+function cartTotals() {
+  const subtotal = Object.entries(cart).filter(([,q]) => q > 0).reduce((a, [n, q]) => a + priceOf(n) * q, 0);
+  const igv = subtotal * 0.18;
+  return { subtotal, igv, total: subtotal + igv };
+}
+function render() {
+  renderTabs();
+  const panel = document.getElementById('stw-panel');
+  if (tab === 'inicio') {
+    panel.innerHTML =
+      '<div style="background:var(--color-primary);border-radius:14px;padding:16px;color:#fff;margin-bottom:12px">' +
+      '<p style="font-size:14px;font-weight:500;margin:0 0 4px">Sabores de Ica</p>' +
+      '<p style="font-size:11px;opacity:0.9;margin:0">Bienvenido a tu mesa digital</p></div>' +
+      '<p style="font-size:12px;color:var(--color-text-muted);margin:0 0 8px">Toca cualquier pestaña para explorar el menú, armar tu pedido y pagar cuando quieras.</p>' +
+      '<button class="stw-btn" onclick="setTab(\'menu\')">Ver el menú</button>' +
+      '<button class="stw-btn-outline" onclick="callWaiter()"><i class="ti ti-bell" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Llamar al mesero</button>';
+  } else if (tab === 'menu') {
+    panel.innerHTML =
+      '<div class="stw-chips">' + categories.map(c =>
+        '<button class="stw-chip' + (activeCategory === c ? ' active' : '') + '" onclick="setCategory(\'' + c + '\')">' + c + '</button>'
+      ).join('') + '</div>' +
+      menu[activeCategory].map(it =>
+        '<div class="stw-card"><div class="stw-thumb"></div><div style="flex:1"><p class="stw-name">' + it.n + '</p><p style="font-size:11px;color:var(--color-text-muted);margin:0">' + it.d + '</p><p class="stw-price">S/ ' + it.p.toFixed(2) + '</p></div>' +
+        '<button onclick="addToCart(\'' + it.n + '\')" style="width:26px;height:26px;border-radius:50%;background:var(--color-primary);border:none;color:#fff;font-size:15px;cursor:pointer">+</button></div>'
+      ).join('') +
+      '<button class="stw-btn" onclick="setTab(\'carrito\')">Ver carrito</button>';
+  } else if (tab === 'carrito') {
+    const t = cartTotals();
+    const items = Object.entries(cart).filter(([,q]) => q > 0);
+    panel.innerHTML = (items.length ? items.map(([n, q]) =>
+      '<div class="stw-card"><div class="stw-thumb"></div><div style="flex:1"><p class="stw-name">' + n + '</p><p class="stw-price">S/ ' + priceOf(n).toFixed(2) + '</p></div>' +
+      '<div class="stw-qty"><button onclick="changeQty(\'' + n + '\',-1)">-</button><span style="font-size:13px;min-width:14px;text-align:center">' + q + '</span><button onclick="changeQty(\'' + n + '\',1)">+</button></div></div>'
+    ).join('') : '<p style="font-size:12px;color:var(--color-text-muted);text-align:center;padding:20px 0">Tu carrito está vacío.</p>') +
+      '<div style="display:flex;justify-content:space-between;padding:4px 4px;font-size:12px;color:var(--color-text-muted)"><span>Subtotal</span><span>S/ ' + t.subtotal.toFixed(2) + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:4px 4px;font-size:12px;color:var(--color-text-muted)"><span>IGV (18%)</span><span>S/ ' + t.igv.toFixed(2) + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:8px 4px 4px;font-size:14px;font-weight:600;color:var(--color-text);border-top:0.5px solid var(--color-border);margin-top:4px"><span>Total</span><span>S/ ' + t.total.toFixed(2) + '</span></div>' +
+      '<button class="stw-btn" onclick="setTab(\'pago\')">Ir a pagar</button>';
+  } else if (tab === 'pago') {
+    const t = cartTotals();
+    const methods = [
+      { id: 'Tarjeta', icon: 'ti-credit-card' },
+      { id: 'QR / Yape / Plin', icon: 'ti-qrcode' },
+      { id: 'Billetera digital', icon: 'ti-wallet' }
+    ];
+    panel.innerHTML =
+      '<p style="font-size:12px;color:var(--color-text-muted);margin:0 0 10px">Elige tu método de pago</p>' +
+      methods.map(m =>
+        '<div class="stw-pay-option' + (payMethod === m.id ? ' selected' : '') + '" onclick="setPayMethod(\'' + m.id + '\')">' +
+        '<i class="ti ' + m.icon + '" style="font-size:18px;color:var(--color-text)"></i><span style="font-size:13px;color:var(--color-text)">' + m.id + '</span></div>'
+      ).join('') +
+      '<div style="display:flex;justify-content:space-between;padding:10px 4px;font-size:14px;font-weight:600;color:var(--color-text);margin-top:6px"><span>Total a pagar</span><span>S/ ' + t.total.toFixed(2) + '</span></div>' +
+      '<button class="stw-btn" onclick="setTab(\'confirmacion\')">Confirmar y pagar</button>';
+  } else {
+    panel.innerHTML =
+      '<div style="text-align:center;padding:20px 0">' +
+      '<div style="width:56px;height:56px;border-radius:50%;background:var(--color-primary-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">' +
+      '<i class="ti ti-check" style="color:var(--color-primary-dark);font-size:26px"></i></div>' +
+      '<p style="font-size:15px;font-weight:500;color:var(--color-text);margin:0 0 4px">Pedido confirmado</p>' +
+      '<p style="font-size:12px;color:var(--color-text-muted);margin:0">Pagado con ' + payMethod + '</p>' +
+      '<div style="background:var(--color-card);border:0.5px solid var(--color-border);border-radius:12px;padding:12px;margin-top:14px;text-align:left">' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-muted)"><span>Número de orden</span><span style="color:var(--color-text)">ORD-1234</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-muted);margin-top:6px"><span>Tiempo estimado</span><span style="color:var(--color-text)">25 min</span></div>' +
+      '<div style="background:var(--color-primary-light);border-radius:6px;height:6px;margin-top:10px"><div style="background:var(--color-primary);width:45%;height:100%;border-radius:6px"></div></div></div>' +
+      '<button class="stw-btn-outline" onclick="setTab(\'inicio\')" style="margin-top:14px">Volver al inicio</button></div>';
+  }
+}
+</script>
+</body>
+</html>
